@@ -1,0 +1,9 @@
+sudo: required
+services:
+  - docker
+env:
+  - NODE_ENV=ci
+before_install:
+  - docker build -t pgr200/task-man:latest -f ./Dockerfile .
+script:
+  - docker run pgr200/task-man:latest java .war // todo
