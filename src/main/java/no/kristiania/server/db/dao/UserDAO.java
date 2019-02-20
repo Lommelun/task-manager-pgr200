@@ -6,9 +6,13 @@ import no.kristiania.server.db.pojo.Person;
 import java.util.List;
 
 public interface UserDAO {
+
+    public Person get(String name);
+    public Person get(int id);
     public List<Person> getAllUsers();
-    public void addUser(Person person);
-    public void updateUser(Person person);
-    public void deleteUser(Person person);
+    public void add(Person person);
+    public void update(Person person);
+    public void delete(Person person);
     public void assignTo(Task task, Person person);
 }
+

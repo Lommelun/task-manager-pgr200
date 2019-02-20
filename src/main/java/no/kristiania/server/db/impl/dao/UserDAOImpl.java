@@ -21,6 +21,38 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public Person get(int id) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    return new Person(rs.getString("name"), rs.getInt("id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Person get(String name) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "SELECT id, name, status FROM TASK WHERE name = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, name);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    return new Person(rs.getString("name"), rs.getInt("id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public List<Person> getAllUsers() {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
@@ -43,7 +75,7 @@ public class UserDAOImpl implements UserDAO {
 
 
     @Override
-    public void addUser(Person person) {
+    public void add(Person person) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "INSERT INTO Person(name) VALUES(?)";
@@ -57,7 +89,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void updateUser(Person person) {
+    public void update(Person person) {
         {
             try (Connection connection = dataSource.getConnection()) {
                 // TODO
@@ -74,7 +106,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void deleteUser(Person person) {
+    public void delete(Person person) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "DELETE FROM person WHERE id =?";
@@ -88,10 +120,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void assignTo(Task task, Person person)  {
+    public void assignTo(Task task, Person person) {
         try (Connection connection = dataSource.getConnection()) {
-            // TODO
-            String sql = "INSERT INTO UserTask (User_id, Task_id) VALUES(?,?);";
+            String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, person.getId());
                 stmt.setInt(2, task.getId());
@@ -103,3 +134,4 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 }
+

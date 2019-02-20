@@ -17,6 +17,41 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
+    public Task get(int id) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                try(ResultSet rs = stmt.executeQuery()){
+
+                    return new Task(rs.getString("name"),rs.getInt("status"),rs.getInt("id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Task get(String name) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "SELECT id, name, status FROM TASK WHERE name = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, name);
+                try(ResultSet rs = stmt.executeQuery()){
+                    return new Task(rs.getString("name"),rs.getInt("status"),rs.getInt("id"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+    @Override
     public List<Task> getAllTasks() {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
@@ -38,7 +73,7 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void addTask(Task task) {
+    public void add(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "INSERT INTO Task(name,status) VALUES(?,?)";
@@ -55,13 +90,14 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public void update(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
-            String sql = "UPDATE Task SET status = ? WHERE id = ?";
+            String sql = "UPDATE Task SET NAME = ?, status = ? WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, task.getStatus());
-                stmt.setInt(2, task.getId());
+                stmt.setString(1, task.getName());
+                stmt.setInt(2, task.getStatus());
+                stmt.setInt(3, task.getId());
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {

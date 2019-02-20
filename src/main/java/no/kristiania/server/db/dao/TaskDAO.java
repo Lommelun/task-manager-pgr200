@@ -6,9 +6,11 @@ import no.kristiania.server.db.pojo.Person;
 import java.util.List;
 
 public interface TaskDAO {
+    public Task get(String name);
+    public Task get(int id);
     public List<Task> getAllTasks();
-    public void addTask(Task task);
-    public void updateTask(Task task);
+    public void add(Task task);
+    public void update(Task task);
     public void deleteTask(Task task);
     public void assignTo(Person person, Task task);
 }
