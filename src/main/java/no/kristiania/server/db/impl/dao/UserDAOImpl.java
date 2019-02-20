@@ -75,64 +75,90 @@ public class UserDAOImpl implements UserDAO {
 
 
     @Override
-    public void add(Person person) {
+    public boolean add(Person person) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "INSERT INTO Person(name) VALUES(?)";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, person.getName());
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(Person person) {
+    public boolean update(Person person) {
         {
             try (Connection connection = dataSource.getConnection()) {
                 // TODO
                 String sql = "UPDATE person SET name = ? WHERE id = ?";
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     stmt.setInt(1, person.getId());
-                    stmt.executeUpdate();
+                    return stmt.executeUpdate() > 0;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
 
     }
 
     @Override
-    public void delete(int  id) {
+    public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "DELETE FROM person WHERE id =?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void assignTo(Task task, Person person) {
+    public boolean assignTo(Task task, Person person) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "INSERT INTO UserTask (User_id, Task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, person.getId());
                 stmt.setInt(2, task.getId());
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
             }
         } catch (
                 SQLException e) {
             e.printStackTrace();
+            return false;
         }
+    }
+    @Override
+    public List<Task> tasksAssignedToUser(Person person) {
+        try (Connection connection = dataSource.getConnection()) {
+            // TODO
+            ArrayList<Task> tasks = new ArrayList<>();
+            String sql = "SELECT Task.id, NAME FROM Task INNER JOIN usertask ON usertask.task_id = task.id WHERE usertask.user_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, person.getId());
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        tasks.add(new Task(rs.getString("name"),rs.getInt("status"), rs.getInt("id")));
+                    }
+                }
+            }
+            return tasks;
+        } catch (
+                SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }
 

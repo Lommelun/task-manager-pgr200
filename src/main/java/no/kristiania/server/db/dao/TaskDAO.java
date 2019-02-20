@@ -9,9 +9,9 @@ public interface TaskDAO {
     public Task get(String name);
     public Task get(int id);
     public List<Task> getAllTasks();
-    public void add(Task task);
-    public void update(Task task);
-    public void delete(int id);
-    public void assignTo(Person person, Task task);
+    public boolean add(Task task);
+    public boolean update(Task task);
+    public boolean delete(int id);
+    public boolean assignTo(Person person, Task task);
     public List<Person> usersAssignedToTask(Task task);
 }

@@ -10,9 +10,11 @@ public interface UserDAO {
     public Person get(String name);
     public Person get(int id);
     public List<Person> getAllUsers();
-    public void add(Person person);
-    public void update(Person person);
-    public void delete(int id);
-    public void assignTo(Task task, Person person);
+    public boolean add(Person person);
+    public boolean update(Person person);
+    public boolean delete(int id);
+    public boolean assignTo(Task task, Person person);
+    public List<Task> tasksAssignedToUser(Person person);
+
 }
 

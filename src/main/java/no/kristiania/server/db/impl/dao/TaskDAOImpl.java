@@ -75,7 +75,7 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void add(Task task) {
+    public boolean add(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "INSERT INTO Task(name,status) VALUES(?,?)";
@@ -83,16 +83,18 @@ public class TaskDAOImpl implements TaskDAO {
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, task.getName());
                 stmt.setInt(2, task.getStatus());
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
+
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(Task task) {
+    public boolean update(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "UPDATE Task SET NAME = ?, status = ? WHERE id = ?";
@@ -100,40 +102,43 @@ public class TaskDAOImpl implements TaskDAO {
                 stmt.setString(1, task.getName());
                 stmt.setInt(2, task.getStatus());
                 stmt.setInt(3, task.getId());
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void delete(int id) {
+    public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "DELETE FROM Task WHERE id =?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void assignTo(Person person, Task task) {
+    public boolean assignTo(Person person, Task task) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "INSERT INTO UserTask (User_id, Task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, person.getId());
                 stmt.setInt(2, task.getId());
-                stmt.executeUpdate();
+                return stmt.executeUpdate() > 0;
             }
-        } catch (
-                SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
