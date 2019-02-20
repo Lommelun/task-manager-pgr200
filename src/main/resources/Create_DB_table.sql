@@ -2,6 +2,5 @@ create table if not exists Task (id SERIAL primary key, NAME varchar not null, S
 
 create table if not exists Person (id SERIAL primary key, NAME varchar not null);
 
-create table if not exists UserTasks (id SERIAL PRIMARY KEY, User_id INTEGER REFERENCES Person(id),
-Task_id INTEGER REFERENCES Task(id) );
-
+create table if not exists UserTask (id SERIAL PRIMARY KEY, User_id INTEGER REFERENCES Person(id) ON DELETE CASCADE,
+Task_id INTEGER REFERENCES Task(id) ON DELETE CASCADE );
