@@ -1,4 +1,4 @@
-package no.kristiania.db;
+package no.kristiania.server.db;
 
 import org.postgresql.ds.PGPoolingDataSource;
 

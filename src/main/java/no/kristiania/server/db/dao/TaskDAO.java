@@ -1,7 +1,7 @@
-package no.kristiania.db.dao;
+package no.kristiania.server.db.dao;
 
-import no.kristiania.db.pojo.Task;
-import no.kristiania.db.pojo.Person;
+import no.kristiania.server.db.pojo.Task;
+import no.kristiania.server.db.pojo.Person;
 
 import java.util.List;
 
