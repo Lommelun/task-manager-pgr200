@@ -22,9 +22,10 @@ public class TaskDAOImpl implements TaskDAO {
             String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
-                try(ResultSet rs = stmt.executeQuery()){
-
-                    return new Task(rs.getString("name"),rs.getInt("status"),rs.getInt("id"));
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new Task(rs.getString("name"), rs.getInt("status"), rs.getInt("id"));
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -39,8 +40,10 @@ public class TaskDAOImpl implements TaskDAO {
             String sql = "SELECT id, name, status FROM TASK WHERE name = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, name);
-                try(ResultSet rs = stmt.executeQuery()){
-                    return new Task(rs.getString("name"),rs.getInt("status"),rs.getInt("id"));
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new Task(rs.getString("NAME"), rs.getInt("STATUS"), rs.getInt("ID"));
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -48,7 +51,6 @@ public class TaskDAOImpl implements TaskDAO {
         }
         return null;
     }
-
 
 
     @Override
@@ -106,12 +108,12 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void deleteTask(Task task) {
+    public void delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "DELETE FROM Task WHERE id =?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, task.getId());
+                stmt.setInt(1, id);
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -135,4 +137,29 @@ public class TaskDAOImpl implements TaskDAO {
         }
     }
 
+    @Override
+    public List<Person> usersAssignedToTask(Task task) {
+        try (Connection connection = dataSource.getConnection()) {
+            // TODO
+            ArrayList<Person> people = new ArrayList<>();
+            String sql = "SELECT Person.id, NAME FROM Person INNER JOIN usertask ON usertask.user_id = person.id WHERE usertask.task_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, task.getId());
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        people.add(new Person(rs.getString("name"), rs.getInt("id")));
+                    }
+                }
+            }
+            return people;
+        } catch (
+                SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
 }
+
+

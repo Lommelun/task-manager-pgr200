@@ -11,6 +11,7 @@ public interface TaskDAO {
     public List<Task> getAllTasks();
     public void add(Task task);
     public void update(Task task);
-    public void deleteTask(Task task);
+    public void delete(int id);
     public void assignTo(Person person, Task task);
+    public List<Person> usersAssignedToTask(Task task);
 }

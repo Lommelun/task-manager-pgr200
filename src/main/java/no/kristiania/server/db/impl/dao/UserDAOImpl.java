@@ -106,12 +106,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void delete(Person person) {
+    public void delete(int  id) {
         try (Connection connection = dataSource.getConnection()) {
             // TODO
             String sql = "DELETE FROM person WHERE id =?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, person.getId());
+                stmt.setInt(1, id);
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -122,7 +122,8 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void assignTo(Task task, Person person) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
+            // TODO
+            String sql = "INSERT INTO UserTask (User_id, Task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, person.getId());
                 stmt.setInt(2, task.getId());

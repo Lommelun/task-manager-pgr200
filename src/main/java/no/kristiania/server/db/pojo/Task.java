@@ -5,7 +5,6 @@ public class Task {
     private int status;
     private int id;
 
-
     public Task(String name, int status, int id) {
         this.name = name;
         this.status = status;
@@ -15,8 +14,6 @@ public class Task {
         this.name = name;
         this.status = status;
     }
-
-
 
     public String getName() {
         return name;
@@ -40,5 +37,12 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(!(obj instanceof Task)) return false;
+        return id == ((Task) obj).id;
     }
 }
