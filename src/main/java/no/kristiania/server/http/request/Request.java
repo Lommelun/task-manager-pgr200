@@ -17,7 +17,7 @@ public class Request {
         version = s[2];
 
         this.headers = headers;
-        if (headers.get("Content-Type") != null && headers.get("Content-Type").equals("application/json")) {
+        if (headers.get("Content-Type") != null && headers.get("Content-Type").startsWith("application/json")) {
             try {
                 this.body = deserializeBody(body);
             } catch (JsonParseException e) {
