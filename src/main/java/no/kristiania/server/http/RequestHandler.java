@@ -108,7 +108,7 @@ public class RequestHandler {
                 return ContributorHandler.getAll();
             case "/api/user/":
                 if (id > -1) return ContributorHandler.get(id);
-                if (search != null) ContributorHandler.get(search);
+                if (search != null) return ContributorHandler.get(search);
             case "/api/task/":
                 if (id > -1) return TaskHandler.get(id);
             default:
