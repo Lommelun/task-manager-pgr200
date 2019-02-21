@@ -7,14 +7,15 @@ import java.util.List;
 
 public interface ContributorDAO {
 
-    public Contributor get(String name);
-    public Contributor get(int id);
-    public List<Contributor> getAllUsers();
-    public int add(Contributor contributor);
-    public boolean update(Contributor contributor);
-    public boolean delete(int id);
-    public boolean assignTo(Task task, Contributor contributor);
-
+    Contributor get(String name);
+    Contributor get(int id);
+    List<Contributor> getAllUsers();
+    int add(Contributor contributor);
+    boolean update(Contributor contributor);
+    boolean delete(int id);
+    boolean assignTo(Task task, Contributor contributor);
+    boolean assignTo(int task, int owner);
     List<Task> tasksAssignedToUser(Contributor person);
+    List<Task> tasksAssignedToUser(int id);
 }
 

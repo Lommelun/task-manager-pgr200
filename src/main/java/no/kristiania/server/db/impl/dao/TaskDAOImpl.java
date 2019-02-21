@@ -141,11 +141,16 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public List<Contributor> usersAssignedToTask(Task task) {
+        return usersAssignedToTask(task.getId());
+    }
+
+    @Override
+    public List<Contributor> usersAssignedToTask(int id) {
         try (Connection connection = dataSource.getConnection()) {
             ArrayList<Contributor> people = new ArrayList<>();
             String sql = "SELECT Contributor.id, NAME FROM Contributor INNER JOIN usertask ON usertask.user_id = contributor.id WHERE usertask.task_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, task.getId());
+                stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
                     people.add(new Contributor(rs.getString("name"), rs.getInt("id")));

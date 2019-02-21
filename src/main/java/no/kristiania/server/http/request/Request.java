@@ -1,4 +1,4 @@
-package no.kristiania.server.http;
+package no.kristiania.server.http.request;
 
 import com.google.gson.*;
 import no.kristiania.shared.dto.BodyDTO;

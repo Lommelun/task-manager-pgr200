@@ -1,18 +1,18 @@
-package no.kristiania.server.http;
+package no.kristiania.server.http.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class RequestParser {
+public class RequestParser {
     private BufferedReader input;
 
-    RequestParser(BufferedReader input) throws IOException {
+    public RequestParser(BufferedReader input) throws IOException {
         this.input = input;
     }
 
-    Request parse() throws IOException, IllegalArgumentException {
+    public Request parse() throws IOException, IllegalArgumentException {
         String statusLine = input.readLine();
         if (!statusLine.matches("^(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE) (/.*) (HTTP/[0-9](.[0-9])?)$")) {
             throw new IllegalArgumentException("This header status is malformed or not supported on this server");

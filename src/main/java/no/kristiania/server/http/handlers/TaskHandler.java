@@ -1,4 +1,4 @@
-package no.kristiania.server.http;
+package no.kristiania.server.http.handlers;
 
 import com.google.gson.Gson;
 import no.kristiania.server.db.Connector;
@@ -12,8 +12,8 @@ import no.kristiania.shared.dto.TaskDTO;
 import java.sql.SQLException;
 import java.util.List;
 
-class TaskHandler {
-    static String insert(TaskDTO task) throws SQLException {
+public class TaskHandler {
+    public static String insert(TaskDTO task) throws SQLException {
         boolean result;
         TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
@@ -26,7 +26,7 @@ class TaskHandler {
         return result ? "HTTP/1.1 201 CREATED\r\n" : "HTTP/1.1 400 Bad Request\r\n";
     }
 
-    static String delete(TaskDTO task) throws SQLException {
+    public static String delete(TaskDTO task) throws SQLException {
         TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
         return taskDAO.delete(task.getId())
@@ -34,7 +34,7 @@ class TaskHandler {
                 : "HTTP/1.1 400 Bad Request\r\n";
     }
 
-    static String getAll() throws SQLException {
+    public static String getAll() throws SQLException {
         TaskDAO task = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
         List<Task> tasks = task.getAllTasks();
@@ -47,7 +47,7 @@ class TaskHandler {
                 json;
     }
 
-    static String get(int id) throws SQLException {
+    public static String get(int id) throws SQLException {
         TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
         String json = new Gson().toJson(taskDAO.get(id));

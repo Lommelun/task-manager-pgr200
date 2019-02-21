@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContributorDAOImpl implements ContributorDAO {
-    private List<Contributor> people;
     private DataSource dataSource;
 
     public ContributorDAOImpl(DataSource dataSource) {
@@ -125,11 +124,16 @@ public class ContributorDAOImpl implements ContributorDAO {
 
     @Override
     public boolean assignTo(Task task, Contributor contributor) {
+        return assignTo(task.getId(), contributor.getId());
+    }
+
+    @Override
+    public boolean assignTo(int task, int owner) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "INSERT INTO UserTask (user_id, task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, contributor.getId());
-                stmt.setInt(2, task.getId());
+                stmt.setInt(1, owner);
+                stmt.setInt(2, task);
                 return stmt.executeUpdate() > 0;
             }
         } catch (SQLException e) {
@@ -140,11 +144,16 @@ public class ContributorDAOImpl implements ContributorDAO {
 
     @Override
     public List<Task> tasksAssignedToUser(Contributor contributor) {
+        return tasksAssignedToUser(contributor.getId());
+    }
+
+    @Override
+    public List<Task> tasksAssignedToUser(int id) {
         try (Connection connection = dataSource.getConnection()) {
             ArrayList<Task> tasks = new ArrayList<>();
             String sql = "SELECT Task.id, NAME FROM Task INNER JOIN usertask ON usertask.task_id = task.id WHERE usertask.user_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, contributor.getId());
+                stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
                     tasks.add(new Task(rs.getString("name"), rs.getInt("id")));

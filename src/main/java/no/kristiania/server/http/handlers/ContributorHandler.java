@@ -1,4 +1,4 @@
-package no.kristiania.server.http;
+package no.kristiania.server.http.handlers;
 
 import com.google.gson.Gson;
 import no.kristiania.server.db.Connector;
@@ -10,8 +10,8 @@ import no.kristiania.shared.dto.ContributorDTO;
 import java.sql.SQLException;
 import java.util.List;
 
-class ContributorHandler {
-    static String insert(ContributorDTO contributor) throws SQLException {
+public class ContributorHandler {
+    public static String insert(ContributorDTO contributor) throws SQLException {
         boolean result;
         ContributorDAO contributorDAO = new ContributorDAOImpl(Connector.getInstance().getDataSource());
 
@@ -24,7 +24,7 @@ class ContributorHandler {
         return result ? "HTTP/1.1 201 CREATED\r\n" : "HTTP/1.1 400 Bad Request\r\n";
     }
 
-    static String delete(ContributorDTO contributor) throws SQLException {
+    public static String delete(ContributorDTO contributor) throws SQLException {
         ContributorDAO user = new ContributorDAOImpl(Connector.getInstance().getDataSource());
 
         return user.delete(contributor.getId())
@@ -32,7 +32,7 @@ class ContributorHandler {
                 : "HTTP/1.1 400 Bad Request\r\n";
     }
 
-    static String getAll() throws SQLException {
+    public static String getAll() throws SQLException {
         ContributorDAO user = new ContributorDAOImpl(Connector.getInstance().getDataSource());
         List<Contributor> users = user.getAllUsers();
 

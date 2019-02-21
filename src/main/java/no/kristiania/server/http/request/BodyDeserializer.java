@@ -1,6 +1,7 @@
-package no.kristiania.server.http;
+package no.kristiania.server.http.request;
 
 import com.google.gson.*;
+import no.kristiania.shared.dto.AssignRequestDTO;
 import no.kristiania.shared.dto.BodyDTO;
 import no.kristiania.shared.dto.TaskDTO;
 import no.kristiania.shared.dto.ContributorDTO;
@@ -25,9 +26,22 @@ class BodyDeserializer implements JsonDeserializer<BodyDTO> {
                 return task(jsonObject);
             case "user":
                 return user(jsonObject);
+            case "assign":
+                return assign(jsonObject);
             default:
                 return raw(jsonObject);
         }
+    }
+
+    private BodyDTO assign(JsonObject jsonObject) {
+        AssignRequestDTO request = new AssignRequestDTO();
+
+        if (jsonObject.get("user_id") != null && jsonObject.get("task_id") != null) {
+            request.setOwner(jsonObject.get("user_id").getAsInt());
+            request.setTask(jsonObject.get("task_id").getAsInt());
+        } else return raw(jsonObject);
+
+        return request;
     }
 
     private BodyDTO user(JsonObject jsonObject) {

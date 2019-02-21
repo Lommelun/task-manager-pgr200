@@ -1,5 +1,11 @@
 package no.kristiania.server.http;
 
+import no.kristiania.server.http.handlers.AssignRequestHandler;
+import no.kristiania.server.http.handlers.ContributorHandler;
+import no.kristiania.server.http.handlers.TaskHandler;
+import no.kristiania.server.http.request.Request;
+import no.kristiania.server.http.request.RequestParser;
+import no.kristiania.shared.dto.AssignRequestDTO;
 import no.kristiania.shared.dto.BodyDTO;
 import no.kristiania.shared.dto.TaskDTO;
 import no.kristiania.shared.dto.ContributorDTO;
@@ -47,6 +53,13 @@ public class RequestHandler {
                     return "HTTP/1.1 400 Bad Request\r\n";
                 }
                 return ContributorHandler.insert((ContributorDTO) body);
+            }
+            case "/api/user/assign":
+            case "/api/task/assign": {
+                if (!(body instanceof AssignRequestDTO)) {
+                    return "HTTP/1.1 400 Bad Request\r\n";
+                }
+                return AssignRequestHandler.assign((AssignRequestDTO) body);
             }
             default:
                 return "HTTP/1.1 400 Bad Request\r\n";
@@ -96,14 +109,14 @@ public class RequestHandler {
 
         switch (resource) {
             case "/": {
-                String body = "Could not find the requested resource,\n" +
+                String body = "Could not find the requested resource.\n" +
                         "Please try one of the following endpoints:\n" +
-                        "\t/api/task\n" +
-                        "\t/api/task/{id}\n" +
-                        "\t/api/tasks\n" +
-                        "\t/api/user\n" +
-                        "\t/api/user/{id}\n" +
-                        "\t/api/users\n" +
+                        "\t/api/task/{$task_id}\n         -- Get task info for $task" +
+                        "\t/api/tasks\n             -- Get all tasks" +
+                        "\t/api/tasks/{$user_id}    -- Get tasks for $user\n" +
+                        "\t/api/user/{$user_id}     -- Get user info for $user\n" +
+                        "\t/api/users\n             -- Get all users" +
+                        "\t/api/users/{$task_id}    -- Get users for $task\n" +
                         "\r\n";
 
                 return "HTTP/1.1 200 OK\n" +
@@ -116,11 +129,15 @@ public class RequestHandler {
                 return TaskHandler.getAll();
             case "/api/users":
                 return ContributorHandler.getAll();
-            case "/api/user/":
+            case "/api/user/": // {user_id}
                 if (id > -1) return ContributorHandler.get(id);
                 if (search != null) return ContributorHandler.get(search);
-            case "/api/task/":
+            case "/api/task/": // {task_id}
                 if (id > -1) return TaskHandler.get(id);
+            case "/api/tasks/": // {user_id}
+                if (id > -1) return AssignRequestHandler.getTasksAssignedTo(id);
+            case "/api/users/": // {task_id}
+                if (id > -1) return AssignRequestHandler.getUsersAssignedTo(id);
             default:
                 return "HTTP/1.1 400 Bad Request\r\n";
         }
