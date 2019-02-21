@@ -25,7 +25,7 @@ public class TaskDAOImpl implements TaskDAO {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     return new Task(rs.getString("name"), rs.getInt("status"), rs.getInt("id"));
-                }
+                } else return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -127,7 +127,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public boolean assignTo(Contributor contributor, Task task) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "INSERT INTO UserTask (contributor_id, Task_id) VALUES(?,?);";
+            String sql = "INSERT INTO UserTask (user_id, task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, contributor.getId());
                 stmt.setInt(2, task.getId());
@@ -143,7 +143,7 @@ public class TaskDAOImpl implements TaskDAO {
     public List<Contributor> usersAssignedToTask(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             ArrayList<Contributor> people = new ArrayList<>();
-            String sql = "SELECT Contributor.id, NAME FROM Contributor INNER JOIN usertask ON usertask.contributor_id = contributor.id WHERE usertask.task_id = ?";
+            String sql = "SELECT Contributor.id, NAME FROM Contributor INNER JOIN usertask ON usertask.user_id = contributor.id WHERE usertask.task_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, task.getId());
                 ResultSet rs = stmt.executeQuery();

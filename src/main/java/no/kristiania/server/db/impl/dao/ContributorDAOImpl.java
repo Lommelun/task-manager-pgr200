@@ -20,7 +20,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     @Override
     public Contributor get(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
+            String sql = "SELECT id, name FROM Contributor WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 ResultSet rs = stmt.executeQuery();
@@ -37,7 +37,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     @Override
     public Contributor get(String name) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT id, name FROM CONTRIBUTOR WHERE name = ?";
+            String sql = "SELECT id, name FROM Contributor WHERE name = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, name);
                 ResultSet rs = stmt.executeQuery();
@@ -74,6 +74,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     public int add(Contributor person) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "INSERT INTO Contributor(name) VALUES(?)";
+
             try (PreparedStatement stmt = connection.prepareStatement(sql,
                     Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, person.getName());
@@ -96,7 +97,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     public boolean update(Contributor contributor) {
         if (contributor.getId() == -1) return false;
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "UPDATE contributor SET name = ? WHERE id = ?";
+            String sql = "UPDATE Contributor SET name = ? WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, contributor.getName());
                 stmt.setInt(2, contributor.getId());
@@ -111,7 +112,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     @Override
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "DELETE FROM contributor WHERE id =?";
+            String sql = "DELETE FROM Contributor WHERE id =?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 return stmt.executeUpdate() > 0;
@@ -125,7 +126,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     @Override
     public boolean assignTo(Task task, Contributor contributor) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "INSERT INTO UserTask (User_id, Task_id) VALUES(?,?);";
+            String sql = "INSERT INTO UserTask (user_id, task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, contributor.getId());
                 stmt.setInt(2, task.getId());
@@ -146,7 +147,7 @@ public class ContributorDAOImpl implements ContributorDAO {
                 stmt.setInt(1, contributor.getId());
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
-                    tasks.add(new Task(rs.getString("name"), rs.getInt("status"), rs.getInt("id")));
+                    tasks.add(new Task(rs.getString("name"), rs.getInt("id")));
                 }
             }
             return tasks;
