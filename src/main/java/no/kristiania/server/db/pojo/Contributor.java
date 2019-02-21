@@ -2,7 +2,7 @@ package no.kristiania.server.db.pojo;
 
 public class Contributor {
     private String name;
-    private final int id;
+    private int id;
 
     public Contributor(String name, int id) {
         this.name = name;
@@ -26,10 +26,14 @@ public class Contributor {
         return id;
     }
 
+    public void setId(int id){ this.id = id;}
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Contributor)) return false;
-        return id == ((Contributor) obj).id;
+        Contributor contributor = (Contributor) obj;
+        return (id == contributor.id) || (name.equals(contributor.name));
+
     }
 }

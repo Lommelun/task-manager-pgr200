@@ -20,9 +20,9 @@ public class TaskDAOImpl implements TaskDAO {
     public Task get(int id) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     return new Task(rs.getString("name"), rs.getInt("status"), rs.getInt("id"));
                 }
@@ -37,9 +37,9 @@ public class TaskDAOImpl implements TaskDAO {
     public Task get(String name) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "SELECT id, name, status FROM TASK WHERE name = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, name);
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     return new Task(rs.getString("NAME"), rs.getInt("STATUS"), rs.getInt("ID"));
                 }
@@ -57,8 +57,7 @@ public class TaskDAOImpl implements TaskDAO {
             ArrayList<Task> tasks = new ArrayList<>();
             String sql = "SELECT * FROM Task";
 
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (ResultSet rs = connection.createStatement().executeQuery(sql)) {
                 while (rs.next()) {
                     tasks.add(new Task(rs.getString("name"), rs.getInt("status"), rs.getInt("id")));
                 }
@@ -71,24 +70,32 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public boolean add(Task task) {
+    public int add(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "INSERT INTO Task(name,status) VALUES(?,?)";
 
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            try (PreparedStatement stmt = connection.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, task.getName());
                 stmt.setInt(2, task.getStatus());
-                return stmt.executeUpdate() > 0;
+                stmt.executeUpdate();
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    task.setId(generatedKeys.getInt(1));
+                    return generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("No ID obtained.");
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 
     @Override
     public boolean update(Task task) {
+        if (task.getId() == -1) return false;
         try (Connection connection = dataSource.getConnection()) {
             String sql = "UPDATE Task SET NAME = ?, status = ? WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -120,7 +127,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public boolean assignTo(Contributor contributor, Task task) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "INSERT INTO UserTask (User_id, Task_id) VALUES(?,?);";
+            String sql = "INSERT INTO UserTask (contributor_id, Task_id) VALUES(?,?);";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, contributor.getId());
                 stmt.setInt(2, task.getId());
@@ -136,10 +143,10 @@ public class TaskDAOImpl implements TaskDAO {
     public List<Contributor> usersAssignedToTask(Task task) {
         try (Connection connection = dataSource.getConnection()) {
             ArrayList<Contributor> people = new ArrayList<>();
-            String sql = "SELECT Person.id, NAME FROM Person INNER JOIN usertask ON usertask.user_id = person.id WHERE usertask.task_id = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            String sql = "SELECT Contributor.id, NAME FROM Contributor INNER JOIN usertask ON usertask.contributor_id = contributor.id WHERE usertask.task_id = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, task.getId());
+                ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
                     people.add(new Contributor(rs.getString("name"), rs.getInt("id")));
                 }

@@ -5,10 +5,7 @@ import no.kristiania.server.db.pojo.Task;
 import no.kristiania.server.db.pojo.Contributor;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +21,12 @@ public class ContributorDAOImpl implements ContributorDAO {
     public Contributor get(int id) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "SELECT id, name, status FROM TASK WHERE id = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
-                return new Contributor(rs.getString("name"), rs.getInt("id"));
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return new Contributor(rs.getString("name"), rs.getInt("id"));
+                } else return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,11 +37,13 @@ public class ContributorDAOImpl implements ContributorDAO {
     @Override
     public Contributor get(String name) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT id, name, status FROM TASK WHERE name = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            String sql = "SELECT id, name FROM CONTRIBUTOR WHERE name = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, name);
-                return new Contributor(rs.getString("name"), rs.getInt("id"));
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return new Contributor(rs.getString("name"), rs.getInt("id"));
+                } else return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,10 +55,9 @@ public class ContributorDAOImpl implements ContributorDAO {
     public List<Contributor> getAllUsers() {
         try (Connection connection = dataSource.getConnection()) {
             ArrayList<Contributor> people = new ArrayList<>();
-            String sql = "SELECT * FROM Person";
+            String sql = "SELECT * FROM Contributor";
 
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (ResultSet rs = connection.createStatement().executeQuery(sql)) {
                 while (rs.next()) {
                     people.add(new Contributor(rs.getString("name"), rs.getInt("id")));
                 }
@@ -71,23 +71,32 @@ public class ContributorDAOImpl implements ContributorDAO {
 
 
     @Override
-    public boolean add(Contributor person) {
+    public int add(Contributor person) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "INSERT INTO Person(name) VALUES(?)";
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            String sql = "INSERT INTO Contributor(name) VALUES(?)";
+            try (PreparedStatement stmt = connection.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, person.getName());
-                return stmt.executeUpdate() > 0;
+                stmt.executeUpdate();
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    person.setId(generatedKeys.getInt(1));
+                    return generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("No ID obtained.");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 
     @Override
     public boolean update(Contributor contributor) {
+        if (contributor.getId() == -1) return false;
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "UPDATE person SET name = ? WHERE id = ?";
+            String sql = "UPDATE contributor SET name = ? WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, contributor.getName());
                 stmt.setInt(2, contributor.getId());
@@ -102,7 +111,7 @@ public class ContributorDAOImpl implements ContributorDAO {
     @Override
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "DELETE FROM person WHERE id =?";
+            String sql = "DELETE FROM contributor WHERE id =?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 return stmt.executeUpdate() > 0;
@@ -129,13 +138,13 @@ public class ContributorDAOImpl implements ContributorDAO {
     }
 
     @Override
-    public List<Task> tasksAssignedToUser(Contributor person) {
+    public List<Task> tasksAssignedToUser(Contributor contributor) {
         try (Connection connection = dataSource.getConnection()) {
             ArrayList<Task> tasks = new ArrayList<>();
             String sql = "SELECT Task.id, NAME FROM Task INNER JOIN usertask ON usertask.task_id = task.id WHERE usertask.user_id = ?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                stmt.setInt(1, person.getId());
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, contributor.getId());
+                ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
                     tasks.add(new Task(rs.getString("name"), rs.getInt("status"), rs.getInt("id")));
                 }

@@ -3,7 +3,7 @@ package no.kristiania.server.db.pojo;
 public class Task {
     private String name;
     private int status;
-    private final int id;
+    private int id;
 
     public Task(String name, int status, int id) {
         this.name = name;
@@ -36,11 +36,13 @@ public class Task {
     public int getId() {
         return id;
     }
+    public void setId(int id){this.id = id;}
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Task)) return false;
-        return id == ((Task) obj).id;
+        Task task = (Task) obj;
+        return (id == task.id) || (task.status == status && name.equals(task.name));
     }
 }

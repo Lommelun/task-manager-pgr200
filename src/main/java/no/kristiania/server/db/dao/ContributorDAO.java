@@ -10,7 +10,7 @@ public interface ContributorDAO {
     public Contributor get(String name);
     public Contributor get(int id);
     public List<Contributor> getAllUsers();
-    public boolean add(Contributor contributor);
+    public int add(Contributor contributor);
     public boolean update(Contributor contributor);
     public boolean delete(int id);
     public boolean assignTo(Task task, Contributor contributor);

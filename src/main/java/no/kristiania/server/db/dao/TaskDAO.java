@@ -9,7 +9,7 @@ public interface TaskDAO {
     public Task get(String name);
     public Task get(int id);
     public List<Task> getAllTasks();
-    public boolean add(Task task);
+    public int add(Task task);
     public boolean update(Task task);
     public boolean delete(int id);
     public boolean assignTo(Contributor contributor, Task task);
