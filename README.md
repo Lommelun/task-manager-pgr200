@@ -4,19 +4,26 @@ PGR200 Eksamen
 ## Forberedelser
 1. Last ned eller klon prosjektet
 2. Pass på at både Java og Maven er installert
-4. sett riktige verdier inn i src/main/java/resources/db.properties slik at det stemmer med din database (prekonfigurert docker-compose kjører med riktige properties).
+4. sett riktige verdier inn i server/src/main/resources/db.properties slik at det stemmer med din database (prekonfigurert docker-compose kjører med riktige properties).
 
 ## Krav
 * Java 11 (JDK)
 * Docker (Eller manuelt sette opp postgres database..)
     
 ## Instruksjoner til å kjøre programmet:
+For å kjøre postgres med docker kjører du
+`docker-compose up`
+for å fjerne docker images, containers, nettverk og volumes laget av docker-compose kjører du
+`docker-compose down -v --rmi all --remove-orphans`
+
 ```
 1. kjør mvn package inni prosjektmappen
-2. kjør server-class i egen terminal.
-3. start client-class i egen terminal.
-4. følg instruksjonene som skrives ut i terminalen.
+2. kjør `java -jar server/target/server.jar` for å starte server
+3. kjør `java -jar client/target/client.jar` for å starte server
 ``` 
+
+Note: bruk CURL som klient, det fungerer mye bedre.
+`curl -X POST|GET|DELETE (-H "Content-Type: application/json") localhost:3000 (-d '{"..":".."}')`
 
 ## Notater til innleveringen
 Vi har valgt å ikke prioritere mye tid på client-klassen, og har heller lagt tiden andre steder vi følte ville vise
