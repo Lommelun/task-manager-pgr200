@@ -12,38 +12,56 @@ class BodyDeserializer implements JsonDeserializer<BodyDTO> {
     @Override
     public BodyDTO deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
             throws JsonParseException {
-
-        JsonObject jsonObject = json.getAsJsonObject();
-
-        JsonElement jsonType = jsonObject.get("type");
-        String type = jsonType.getAsString();
-
-        BodyDTO modelType = null;
-
-        switch(type) {
-            case "user": {
-                modelType = new TaskDTO();
-                int id = jsonObject.get("task_id").getAsInt();
-                int status = jsonObject.get("status").getAsInt();
-                String name = jsonObject.get("name").getAsString();
-
-                ((TaskDTO) modelType).setId(id);
-                ((TaskDTO) modelType).setStatus(status);
-                ((TaskDTO) modelType).setName(name);
-                break;
-            }
-            case "task": {
-                modelType = new ContributorDTO();
-                int id = jsonObject.get("user_id").getAsInt();
-                String name = jsonObject.get("name").getAsString();
-
-                ((ContributorDTO) modelType).setId(id);
-                ((ContributorDTO) modelType).setName(name);
-                break;
-            }
-            default:
+        JsonObject jsonObject;
+        if ((jsonObject = json.getAsJsonObject()) == null) {
+            return raw(json);
         }
 
-        return modelType;
+        // Get type field of json object for mapping
+        String type = jsonObject.get("type") != null ? jsonObject.get("type").getAsString() : "";
+
+        switch (type) {
+            case "task":
+                return task(jsonObject);
+            case "user":
+                return user(jsonObject);
+            default:
+                return raw(jsonObject);
+        }
+    }
+
+    private BodyDTO user(JsonObject jsonObject) {
+        ContributorDTO contributor = new ContributorDTO();
+
+        if (jsonObject.get("user_id") != null) {
+            contributor.setId(jsonObject.get("user_id").getAsInt());
+        }
+
+        if (jsonObject.get("name") != null) {
+            contributor.setName(jsonObject.get("name").getAsString());
+        } else return raw(jsonObject);
+
+        return contributor;
+    }
+
+    private BodyDTO task(JsonObject jsonObject) {
+        TaskDTO task = new TaskDTO();
+
+        if (jsonObject.get("task_id") != null) {
+            task.setId(jsonObject.get("task_id").getAsInt());
+        }
+
+        if (jsonObject.get("status") != null && jsonObject.get("name") != null) {
+            task.setStatus(jsonObject.get("status").getAsInt());
+            task.setName(jsonObject.get("name").getAsString());
+        } else return raw(jsonObject);
+
+        return task;
+    }
+
+    private BodyDTO raw(JsonElement json) {
+        BodyDTO body = new BodyDTO();
+        body.setRaw(json.toString());
+        return body;
     }
 }

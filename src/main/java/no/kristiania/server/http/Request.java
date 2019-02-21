@@ -1,7 +1,6 @@
 package no.kristiania.server.http;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import no.kristiania.shared.dto.BodyDTO;
 
 import java.util.Map;
@@ -18,7 +17,13 @@ public class Request {
         version = s[2];
 
         this.headers = headers;
-        this.body = deserializeBody(body);
+        if (headers.get("Content-Type") != null && headers.get("Content-Type").equals("application/json")) {
+            try {
+                this.body = deserializeBody(body);
+            } catch (JsonParseException e) {
+                this.body = null;
+            }
+        }
     }
 
     private BodyDTO deserializeBody(String body) {

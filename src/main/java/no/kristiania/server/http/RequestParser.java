@@ -30,7 +30,7 @@ class RequestParser {
         if (headers.get("Content-Length") != null) {
             int contentLength = Integer.parseInt(headers.get("Content-Length"));
             for (int i = 0; i < contentLength; i++) {
-                body.append(input.read());
+                body.append((char) input.read());
             }
         }
 
