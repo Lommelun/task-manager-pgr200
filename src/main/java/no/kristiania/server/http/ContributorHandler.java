@@ -56,4 +56,16 @@ class ContributorHandler {
                 "Content-Length: " + json.length() + "\r\n\r\n" +
                 json;
     }
+
+    public static String get(String search) throws SQLException {
+        ContributorDAO contributorDAO = new ContributorDAOImpl(Connector.getInstance().getDataSource());
+
+        String json = new Gson().toJson(contributorDAO.get(search));
+        json += "\n";
+
+        return "HTTP/1.1 200 OK\n" +
+                "Content-Type: application/json\n" +
+                "Content-Length: " + json.length() + "\r\n\r\n" +
+                json;
+    }
 }

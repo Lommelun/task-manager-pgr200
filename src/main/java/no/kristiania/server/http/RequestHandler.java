@@ -74,9 +74,14 @@ public class RequestHandler {
 
     private String get(String resource) throws SQLException {
         int id = -1;
+        String search = null;
         if (resource.matches("^/api/.*/[0-9]+$")) {
-            id = Integer.parseInt(resource.split("/")[2]);
+            id = Integer.parseInt(resource.split("/")[3]);
             resource = resource.replace(Integer.toString(id), "");
+        }
+        if (resource.matches("^/api/.*/[a-åA-Å]+$")) {
+            search = resource.split("/")[3];
+            resource = resource.replace(search, "");
         }
 
         switch (resource) {
@@ -103,6 +108,7 @@ public class RequestHandler {
                 return ContributorHandler.getAll();
             case "/api/user/":
                 if (id > -1) return ContributorHandler.get(id);
+                if (search != null) ContributorHandler.get(search);
             case "/api/task/":
                 if (id > -1) return TaskHandler.get(id);
             default:

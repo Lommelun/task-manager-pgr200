@@ -58,4 +58,16 @@ class TaskHandler {
                 "Content-Length: " + json.length() + "\r\n\r\n" +
                 json;
     }
+
+    public static String get(String search) throws SQLException {
+        TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
+
+        String json = new Gson().toJson(taskDAO.get(search));
+        json += "\n";
+
+        return "HTTP/1.1 200 OK\n" +
+                "Content-Type: application/json\n" +
+                "Content-Length: " + json.length() + "\r\n\r\n" +
+                json;
+    }
 }
