@@ -111,11 +111,11 @@ public class RequestHandler {
             case "/": {
                 String body = "Could not find the requested resource.\n" +
                         "Please try one of the following endpoints:\n" +
-                        "\t/api/task/{$task_id}\n         -- Get task info for $task" +
-                        "\t/api/tasks\n             -- Get all tasks" +
+                        "\t/api/task/{$task_id}     -- Get task info for $task\n" +
+                        "\t/api/tasks               -- Get all tasks\n" +
                         "\t/api/tasks/{$user_id}    -- Get tasks for $user\n" +
                         "\t/api/user/{$user_id}     -- Get user info for $user\n" +
-                        "\t/api/users\n             -- Get all users" +
+                        "\t/api/users               -- Get all users\n" +
                         "\t/api/users/{$task_id}    -- Get users for $task\n" +
                         "\r\n";
 
