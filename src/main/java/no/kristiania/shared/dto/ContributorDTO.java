@@ -1,12 +1,8 @@
 package no.kristiania.shared.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 public class ContributorDTO extends BodyDTO {
-    @SerializedName("name")
     private String name;
 
-    @SerializedName("user_id")
     private int id;
 
     public String getName() {
