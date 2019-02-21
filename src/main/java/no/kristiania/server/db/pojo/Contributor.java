@@ -33,7 +33,6 @@ public class Contributor {
         if (this == obj) return true;
         if (!(obj instanceof Contributor)) return false;
         Contributor contributor = (Contributor) obj;
-        return (id == contributor.id) || (name.equals(contributor.name));
-
+        return this.id == contributor.id;
     }
 }
