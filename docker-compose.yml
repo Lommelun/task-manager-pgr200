@@ -7,6 +7,8 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: task_manager_db
+      POSTGRES_DB: taskman
     ports:
       - 5432:5432
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d

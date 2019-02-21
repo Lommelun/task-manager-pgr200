@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class Connector {
-    private static Connector connector = new Connector();
-    private static PGPoolingDataSource dataSource;
+    private static Connector instance = new Connector();
+    private PGPoolingDataSource dataSource;
 
     private Connector() {
         Properties prop = new Properties();
@@ -29,7 +29,11 @@ public class Connector {
         }
     }
 
-    public static DataSource getDataSource() throws SQLException {
+    public static Connector getInstance() {
+        return instance;
+    }
+
+    public DataSource getDataSource() throws SQLException {
         return dataSource;
     }
 }
