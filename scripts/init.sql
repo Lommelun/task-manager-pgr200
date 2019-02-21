@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS Contributor
 
 CREATE TABLE IF NOT EXISTS UserTask
 (
-  id             SERIAL PRIMARY KEY,
-  contributor_id INTEGER REFERENCES Contributor (id) ON DELETE CASCADE,
-  task_id        INTEGER REFERENCES Task (id) ON DELETE CASCADE
+  id      SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES Contributor (id) ON DELETE CASCADE,
+  task_id INTEGER REFERENCES Task (id) ON DELETE CASCADE
 );

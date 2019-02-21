@@ -48,7 +48,8 @@ public class ContributorHandler {
     public static String get(int id) throws SQLException {
         ContributorDAO contributorDAO = new ContributorDAOImpl(Connector.getInstance().getDataSource());
 
-        String json = new Gson().toJson(contributorDAO.get(id));
+        Contributor contributor = contributorDAO.get(id);
+        String json = contributor != null ? new Gson().toJson(contributor) : "{}";
         json += "\n";
 
         return "HTTP/1.1 200 OK\n" +
@@ -60,7 +61,8 @@ public class ContributorHandler {
     public static String get(String search) throws SQLException {
         ContributorDAO contributorDAO = new ContributorDAOImpl(Connector.getInstance().getDataSource());
 
-        String json = new Gson().toJson(contributorDAO.get(search));
+        Contributor contributor = contributorDAO.get(search);
+        String json = contributor != null ? new Gson().toJson(contributor) : "{}";
         json += "\n";
 
         return "HTTP/1.1 200 OK\n" +

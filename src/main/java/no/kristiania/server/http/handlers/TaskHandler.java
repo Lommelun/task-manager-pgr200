@@ -2,9 +2,7 @@ package no.kristiania.server.http.handlers;
 
 import com.google.gson.Gson;
 import no.kristiania.server.db.Connector;
-import no.kristiania.server.db.dao.ContributorDAO;
 import no.kristiania.server.db.dao.TaskDAO;
-import no.kristiania.server.db.impl.dao.ContributorDAOImpl;
 import no.kristiania.server.db.impl.dao.TaskDAOImpl;
 import no.kristiania.server.db.pojo.Task;
 import no.kristiania.shared.dto.TaskDTO;
@@ -38,7 +36,7 @@ public class TaskHandler {
         TaskDAO task = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
         List<Task> tasks = task.getAllTasks();
-        String json = new Gson().toJson(tasks);
+        String json = !tasks.isEmpty() ? new Gson().toJson(tasks) : "{}";
         json += "\n";
 
         return "HTTP/1.1 200 OK\n" +
@@ -50,7 +48,8 @@ public class TaskHandler {
     public static String get(int id) throws SQLException {
         TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
-        String json = new Gson().toJson(taskDAO.get(id));
+        Task task = taskDAO.get(id);
+        String json = task != null ? new Gson().toJson(task) : "{}";
         json += "\n";
 
         return "HTTP/1.1 200 OK\n" +
@@ -62,7 +61,8 @@ public class TaskHandler {
     public static String get(String search) throws SQLException {
         TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
 
-        String json = new Gson().toJson(taskDAO.get(search));
+        Task task = taskDAO.get(search);
+        String json = task != null ? new Gson().toJson(task) : "{}";
         json += "\n";
 
         return "HTTP/1.1 200 OK\n" +
