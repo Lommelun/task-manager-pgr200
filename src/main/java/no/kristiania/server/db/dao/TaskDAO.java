@@ -6,12 +6,13 @@ import no.kristiania.server.db.pojo.Contributor;
 import java.util.List;
 
 public interface TaskDAO {
-    public Task get(String name);
-    public Task get(int id);
-    public List<Task> getAllTasks();
-    public int add(Task task);
-    public boolean update(Task task);
-    public boolean delete(int id);
-    public boolean assignTo(Contributor contributor, Task task);
-    public List<Contributor> usersAssignedToTask(Task task);
+    Task get(String name);
+    Task get(int id);
+    List<Task> getAllTasks();
+    int add(Task task);
+    boolean update(Task task);
+    boolean delete(int id);
+    boolean assignTo(Contributor contributor, Task task);
+    List<Contributor> usersAssignedToTask(Task task);
+    List<Contributor> usersAssignedToTask(int id);
 }

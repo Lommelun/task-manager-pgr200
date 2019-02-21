@@ -1,5 +1,11 @@
 package no.kristiania.server.http;
 
+import no.kristiania.server.http.handlers.AssignRequestHandler;
+import no.kristiania.server.http.handlers.ContributorHandler;
+import no.kristiania.server.http.handlers.TaskHandler;
+import no.kristiania.server.http.request.Request;
+import no.kristiania.server.http.request.RequestParser;
+import no.kristiania.shared.dto.AssignRequestDTO;
 import no.kristiania.shared.dto.BodyDTO;
 import no.kristiania.shared.dto.TaskDTO;
 import no.kristiania.shared.dto.ContributorDTO;
@@ -48,12 +54,25 @@ public class RequestHandler {
                 }
                 return ContributorHandler.insert((ContributorDTO) body);
             }
+            case "/api/user/assign":
+            case "/api/task/assign": {
+                if (!(body instanceof AssignRequestDTO)) {
+                    return "HTTP/1.1 400 Bad Request\r\n";
+                }
+                return AssignRequestHandler.assign((AssignRequestDTO) body);
+            }
             default:
                 return "HTTP/1.1 400 Bad Request\r\n";
         }
     }
 
     private String delete(String resource, BodyDTO body) throws SQLException {
+        int id = -1;
+        if (resource.matches("^/api/.*/[0-9]+$")) {
+            id = Integer.parseInt(resource.split("/")[3]);
+            resource = resource.replace(Integer.toString(id), "");
+        }
+
         switch (resource) {
             case "/api/task": {
                 if (!(body instanceof TaskDTO)) {
@@ -67,6 +86,10 @@ public class RequestHandler {
                 }
                 return ContributorHandler.delete((ContributorDTO) body);
             }
+            case "/api/user/":
+                if (id > -1) return ContributorHandler.delete(id);
+            case "/api/task/":
+                if (id > -1) return TaskHandler.delete(id);
             default:
                 return "HTTP/1.1 400 Bad Request\r\n";
         }
@@ -74,21 +97,26 @@ public class RequestHandler {
 
     private String get(String resource) throws SQLException {
         int id = -1;
+        String search = null;
         if (resource.matches("^/api/.*/[0-9]+$")) {
-            id = Integer.parseInt(resource.split("/")[2]);
+            id = Integer.parseInt(resource.split("/")[3]);
             resource = resource.replace(Integer.toString(id), "");
+        }
+        if (resource.matches("^/api/.*/[a-åA-Å]+$")) {
+            search = resource.split("/")[3];
+            resource = resource.replace(search, "");
         }
 
         switch (resource) {
             case "/": {
-                String body = "Could not find the requested resource,\n" +
+                String body = "Could not find the requested resource.\n" +
                         "Please try one of the following endpoints:\n" +
-                        "\t/api/task\n" +
-                        "\t/api/task/{id}\n" +
-                        "\t/api/tasks\n" +
-                        "\t/api/user\n" +
-                        "\t/api/user/{id}\n" +
-                        "\t/api/users\n" +
+                        "\t/api/task/{$task_id}     -- Get task info for $task\n" +
+                        "\t/api/tasks               -- Get all tasks\n" +
+                        "\t/api/tasks/{$user_id}    -- Get tasks for $user\n" +
+                        "\t/api/user/{$user_id}     -- Get user info for $user\n" +
+                        "\t/api/users               -- Get all users\n" +
+                        "\t/api/users/{$task_id}    -- Get users for $task\n" +
                         "\r\n";
 
                 return "HTTP/1.1 200 OK\n" +
@@ -101,10 +129,15 @@ public class RequestHandler {
                 return TaskHandler.getAll();
             case "/api/users":
                 return ContributorHandler.getAll();
-            case "/api/user/":
+            case "/api/user/": // {user_id}
                 if (id > -1) return ContributorHandler.get(id);
-            case "/api/task/":
+                if (search != null) return ContributorHandler.get(search);
+            case "/api/task/": // {task_id}
                 if (id > -1) return TaskHandler.get(id);
+            case "/api/tasks/": // {user_id}
+                if (id > -1) return AssignRequestHandler.getTasksAssignedTo(id);
+            case "/api/users/": // {task_id}
+                if (id > -1) return AssignRequestHandler.getUsersAssignedTo(id);
             default:
                 return "HTTP/1.1 400 Bad Request\r\n";
         }
