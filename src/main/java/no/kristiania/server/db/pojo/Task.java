@@ -3,16 +3,18 @@ package no.kristiania.server.db.pojo;
 public class Task {
     private String name;
     private int status;
-    private int id;
+    private final int id;
 
     public Task(String name, int status, int id) {
         this.name = name;
         this.status = status;
         this.id = id;
     }
-    public Task (String name, int status) {
+
+    public Task(String name, int status) {
         this.name = name;
         this.status = status;
+        this.id = -1;
     }
 
     public String getName() {
@@ -35,14 +37,10 @@ public class Task {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(!(obj instanceof Task)) return false;
+        if (this == obj) return true;
+        if (!(obj instanceof Task)) return false;
         return id == ((Task) obj).id;
     }
 }

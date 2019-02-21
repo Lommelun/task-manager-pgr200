@@ -1,7 +1,7 @@
 package no.kristiania.server.db.dao;
 
 import no.kristiania.server.db.pojo.Task;
-import no.kristiania.server.db.pojo.Person;
+import no.kristiania.server.db.pojo.Contributor;
 
 import java.util.List;
 
@@ -12,6 +12,6 @@ public interface TaskDAO {
     public boolean add(Task task);
     public boolean update(Task task);
     public boolean delete(int id);
-    public boolean assignTo(Person person, Task task);
-    public List<Person> usersAssignedToTask(Task task);
+    public boolean assignTo(Contributor contributor, Task task);
+    public List<Contributor> usersAssignedToTask(Task task);
 }

@@ -1,10 +1,9 @@
 package no.kristiania.server;
 
+import no.kristiania.server.http.RequestHandler;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 class ServerThread implements Runnable {
     private Socket client;
@@ -22,22 +21,9 @@ class ServerThread implements Runnable {
             BufferedReader input = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
             OutputStream output = this.client.getOutputStream();
 
-            String protocol = input.readLine();
-            Map<String, String> headers = input.lines()
-                    .skip(1)
-                    .takeWhile(c -> !c.isEmpty())
-                    .map(s -> s.split(": "))
-                    .collect(Collectors.toMap(a -> a[0], a -> a[1]));
+            RequestHandler request = new RequestHandler(input);
 
-            output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
-            client.shutdownInput();
-
-            System.out.println(protocol);
-            headers.forEach((a, b) -> System.out.print(a + ": " + b + "\n"));
-
-            String data = input.readLine();
-            System.out.println(data);
-
+            output.write(request.reply());
             client.close();
         } catch (IOException e) {
             e.printStackTrace();

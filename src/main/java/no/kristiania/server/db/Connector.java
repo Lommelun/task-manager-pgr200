@@ -10,12 +10,11 @@ import java.util.Properties;
 
 public class Connector {
     private static Connector connector = new Connector();
-    private PGPoolingDataSource dataSource;
+    private static PGPoolingDataSource dataSource;
 
     private Connector() {
         Properties prop = new Properties();
-        try {
-            InputStream propertiesFile = Connector.class.getClassLoader().getResourceAsStream("db.properties");
+        try (InputStream propertiesFile = Connector.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (propertiesFile == null) {
                 return;
             }
@@ -30,11 +29,7 @@ public class Connector {
         }
     }
 
-    public static Connector getConnector() {
-        return connector;
-    }
-
-    public DataSource getConnection() throws SQLException {
+    public static DataSource getDataSource() throws SQLException {
         return dataSource;
     }
 }
