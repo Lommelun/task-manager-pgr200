@@ -54,6 +54,12 @@ public class RequestHandler {
     }
 
     private String delete(String resource, BodyDTO body) throws SQLException {
+        int id = -1;
+        if (resource.matches("^/api/.*/[0-9]+$")) {
+            id = Integer.parseInt(resource.split("/")[3]);
+            resource = resource.replace(Integer.toString(id), "");
+        }
+
         switch (resource) {
             case "/api/task": {
                 if (!(body instanceof TaskDTO)) {
@@ -67,6 +73,10 @@ public class RequestHandler {
                 }
                 return ContributorHandler.delete((ContributorDTO) body);
             }
+            case "/api/user/":
+                if (id > -1) return ContributorHandler.delete(id);
+            case "/api/task/":
+                if (id > -1) return TaskHandler.delete(id);
             default:
                 return "HTTP/1.1 400 Bad Request\r\n";
         }

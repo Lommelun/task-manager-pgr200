@@ -70,4 +70,12 @@ class TaskHandler {
                 "Content-Length: " + json.length() + "\r\n\r\n" +
                 json;
     }
+
+    public static String delete(int id) throws SQLException {
+        TaskDAO taskDAO = new TaskDAOImpl(Connector.getInstance().getDataSource());
+
+        return taskDAO.delete(id)
+                ? "HTTP/1.1 200 OK\r\n"
+                : "HTTP/1.1 404 Not Found\r\n";
+    }
 }

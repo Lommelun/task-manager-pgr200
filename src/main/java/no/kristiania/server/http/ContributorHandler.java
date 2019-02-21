@@ -68,4 +68,12 @@ class ContributorHandler {
                 "Content-Length: " + json.length() + "\r\n\r\n" +
                 json;
     }
+
+    public static String delete(int id) throws SQLException {
+        ContributorDAO contributorDAO = new ContributorDAOImpl(Connector.getInstance().getDataSource());
+
+        return contributorDAO.delete(id)
+                ? "HTTP/1.1 200 OK\r\n"
+                : "HTTP/1.1 404 Not Found\r\n";
+    }
 }
