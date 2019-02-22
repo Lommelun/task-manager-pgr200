@@ -24,6 +24,8 @@ for å fjerne docker images, containers, nettverk og volumes laget av docker-com
 
 Note: bruk CURL som klient, det fungerer mye bedre.
 `curl -X POST|GET|DELETE (-H "Content-Type: application/json") localhost:3000 (-d '{"..":".."}')`
+Note 2: POST requester er nødt til å ha en property "type" på root ({"type":"..",..}). Dette er på grunn av JSON parse adapteren ikke ble helt ferdig (altså ikke måtte sende type manuellt).
+Type kan være : `"user"`, `"task"` eller `"assign"`
 
 ## Notater til innleveringen
 Vi har valgt å ikke prioritere mye tid på client-klassen, og har heller lagt tiden andre steder vi følte ville vise
